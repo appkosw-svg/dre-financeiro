@@ -15,7 +15,7 @@ export const MONTHS = [
 
 export const MONTH_COUNT = MONTHS.length
 
-export const YEARS = ['2026', '2025', '2024']
+export const YEARS = ['2027', '2026', '2025', '2024']
 
 /** Conta lançável: o usuário digita os 12 valores e pode renomear ou excluir. */
 export type Account = {
@@ -51,6 +51,7 @@ const GROUP_IDS = {
   sales: 'desp-vendas',
   marketing: 'desp-marketing',
   admin: 'desp-admin',
+  finance: 'desp-financeiras',
 } as const
 
 function baseGroups(): Group[] {
@@ -92,7 +93,6 @@ function baseGroups(): Group[] {
       id: GROUP_IDS.sales,
       label: 'Despesas com Vendas',
       sign: 'out',
-      variable: true,
       accounts: [
         { id: 'ven-comissoes', label: 'Comissões de vendas' },
         { id: 'ven-logistica', label: 'Logística de saída' },
@@ -117,48 +117,27 @@ function baseGroups(): Group[] {
         { id: 'adm-terceiros', label: 'Serviços de terceiros' },
       ],
     },
+    {
+      id: GROUP_IDS.finance,
+      label: 'Despesas Financeiras',
+      sign: 'out',
+      accounts: [
+        { id: 'fin-juros', label: 'Juros e taxas bancárias' },
+        { id: 'fin-emprestimos', label: 'Amortização e encargos de empréstimos' },
+      ],
+    },
   ]
-}
-
-/** Sazonalidade determinística para não divergir na hidratação. */
-const SEASONALITY = [
-  0.82, 0.86, 0.95, 0.93, 0.98, 1.0, 1.04, 1.02, 1.06, 1.12, 1.24, 1.16,
-]
-
-const SEED: Record<string, number> = {
-  'rec-produtos': 3_268_000,
-  'rec-servicos': 1_284_000,
-  'rec-recorrente': 268_000,
-  'rec-outras': 62_000,
-  'imp-icms': 394_000,
-  'imp-pis-cofins': 246_280,
-  'imp-devolucoes': 102_000,
-  'cpv-materia': 1_082_000,
-  'cpv-mao-obra': 584_000,
-  'cpv-frete': 210_000,
-  'ven-comissoes': 286_000,
-  'ven-logistica': 226_000,
-  'mkt-midia': 238_500,
-  'mkt-conteudo': 110_000,
-  'adm-pessoal': 268_000,
-  'adm-ocupacao': 96_000,
-  'adm-terceiros': 60_000,
 }
 
 export const zeros = () => Array.from({ length: MONTH_COUNT }, () => 0)
 
-/** Documento inicial de exemplo para o usuário sobrescrever. */
+/** Documento inicial totalmente zerado para o usuário preencher do zero. */
 export function defaultDoc(year: string): DreDoc {
   const groups = baseGroups()
-  const yearFactor = year === '2026' ? 1 : year === '2025' ? 0.84 : 0.71
   const values: DreValues = {}
   for (const group of groups) {
     for (const account of group.accounts) {
-      values[account.id] = SEASONALITY.map(
-        (factor) =>
-          Math.round(((SEED[account.id] ?? 0) * factor * yearFactor) / 1000) *
-          1000,
-      )
+      values[account.id] = zeros()
     }
   }
   return { groups, values }
@@ -283,8 +262,11 @@ export function computeDre(doc: DreDoc): DreComputed {
   const netRevenue = sub(grossRevenue, total(GROUP_IDS.taxes))
   const grossProfit = sub(netRevenue, total(GROUP_IDS.cogs))
   const operatingExpenses = add(
-    add(total(GROUP_IDS.sales), total(GROUP_IDS.marketing)),
-    total(GROUP_IDS.admin),
+    add(
+      add(total(GROUP_IDS.sales), total(GROUP_IDS.marketing)),
+      total(GROUP_IDS.admin),
+    ),
+    total(GROUP_IDS.finance),
   )
   const ebitda = sub(grossProfit, operatingExpenses)
   const variableCosts = doc.groups
@@ -358,6 +340,7 @@ export function computeDre(doc: DreDoc): DreComputed {
     ...groupRows(GROUP_IDS.sales, 1),
     ...groupRows(GROUP_IDS.marketing, 1),
     ...groupRows(GROUP_IDS.admin, 1),
+    ...groupRows(GROUP_IDS.finance, 1),
     result('ebitda', '(=) EBITDA / Lucro Operacional', ebitda, true),
   ]
 
