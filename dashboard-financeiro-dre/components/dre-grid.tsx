@@ -48,7 +48,7 @@ function ValueInput({
     <input
       inputMode="decimal"
       aria-label={label}
-      value={draft ?? (value === 0 ? '' : integer.format(value))}
+      value={draft ?? (value === 0 ? '' : currencyFormatter.format(value / 100))}
       placeholder="0"
       onChange={(event) => setDraft(event.target.value)}
       onFocus={(event) => {
