@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { Button } from "@/components/ui/button"
 import { Calendar, RotateCcw, Download, Plus } from "lucide-react"
 
 interface DREHeaderProps {
@@ -59,32 +58,32 @@ export function DREHeader({
 
       {/* Lado Direito: Ações (Reset, Exportar, Nova Conta) */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button
+        <button
           type="button"
           onClick={onReset}
-          className="gap-2 bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-none text-xs h-9 px-3"
+          className="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium h-9 px-3 rounded-md transition-colors"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Restaurar Padrão
-        </Button>
+        </button>
 
-        <Button
+        <button
           type="button"
           onClick={onExport}
-          className="gap-2 bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-none text-xs h-9 px-3"
+          className="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium h-9 px-3 rounded-md transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           Exportar Excel
-        </Button>
+        </button>
 
-        <Button
+        <button
           type="button"
           onClick={onNewAccount}
-          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-9 px-3 shadow-sm font-medium"
+          className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium h-9 px-3 rounded-md shadow-sm transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           Nova Conta
-        </Button>
+        </button>
       </div>
     </div>
   )
