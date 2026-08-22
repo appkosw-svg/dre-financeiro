@@ -52,7 +52,7 @@ function ValueInput({
       placeholder="0"
       onChange={(event) => setDraft(event.target.value)}
       onFocus={(event) => {
-        setDraft(value === 0 ? '' : String(value));
+        setDraft(value === 0 ? '' : String(value / 100));
         event.currentTarget.select();
       }}
       onBlur={() => {
