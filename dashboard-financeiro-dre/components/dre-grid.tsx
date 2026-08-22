@@ -19,13 +19,16 @@ type Props = {
   onRemoveAccount: (accountId: string, label: string) => void;
 };
 
-const integer = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 function parseInput(raw: string) {
-  const cleaned = raw.replace(/[^\d,.-]/g, '').replace(/\./g, '');
-  const normalized = cleaned.replace(',', '.');
-  const parsed = Number.parseFloat(normalized);
-  return Number.isFinite(parsed) ? Math.round(Math.abs(parsed)) : 0;
+  // Remove tudo exceto números, vírgula e sinal de negativo
+  const cleaned = raw.replace(/[^\d,-]/g, '').replace(/\./g, '').replace(',', '.');
+  const parsed = Number.parseFloat(cleaned);
+  return Number.isFinite(parsed) ? Math.round(parsed * 100) : 0; // Armazena em centavos internamente
 }
 
 function ValueInput({
