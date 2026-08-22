@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { DreGrid } from '@/components/dre-grid'
-import { DreHeader } from '@/components/dre-header'
+import { DREHeader as DreHeader } from '@/components/dre-header'
 import { KpiCards, type Kpi } from '@/components/kpi-cards'
 import { exportCsv, exportPdf } from '@/lib/dre-export'
 import {
@@ -185,16 +185,13 @@ export function DreDashboard() {
   return (
     <div className="mx-auto flex w-full max-w-[100rem] flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       <DreHeader
-        year={year}
+        selectedYear={year}
         onYearChange={setYear}
-        reference={reference}
-        onReferenceChange={setReference}
-        dirty={dirty}
-        savedAt={savedAt}
-        onSave={handleSave}
-        onExportCsv={() => exportCsv(current.rows, year)}
-        onExportPdf={exportPdf}
+        selectedPeriod={reference}
+        onPeriodChange={setReference}
         onReset={handleReset}
+        onExport={() => exportCsv(current.rows, year)}
+        onNewAccount={() => edit((input) => addAccount(input, 'operacionais', 'Nova conta'))}
       />
 
       <KpiCards
